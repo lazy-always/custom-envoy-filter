@@ -40,13 +40,3 @@ envoy_cc_library(
         "@envoy//include/envoy/server:filter_config_interface",
     ],
 )
-
-envoy_cc_test(
-    name = "http_filter_integration_test",
-    srcs = ["http_filter_integration_test.cc"],
-    repository = "@envoy",
-    deps = [
-        ":http_filter_config",
-        "@envoy//test/integration:http_integration_lib",
-    ],
-)
