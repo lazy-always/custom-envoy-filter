@@ -20,3 +20,5 @@ envoy_dependencies()
 load("@envoy//bazel:dependency_imports.bzl", "envoy_dependency_imports")
 
 envoy_dependency_imports()
+
+#load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")

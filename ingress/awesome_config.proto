@@ -1,0 +1,15 @@
+/**
+ *
+ *
+ */
+
+syntax = "proto3";
+
+package envoy.awesome.filters.ingress;
+
+import "validate/validate.proto";
+
+message AwesomeConfig {
+  string key = 1 [ (validate.rules).string.min_bytes = 1 ];
+  string val = 2 [ (validate.rules).string.min_bytes = 1 ];
+}
