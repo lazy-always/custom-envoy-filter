@@ -25,7 +25,6 @@ envoy_cc_library(
     repository = "@envoy",
     deps = [
         ":pkg_cc_proto",
-        #"//third_party/cpprest",
         "@envoy//source/exe:envoy_common_lib",
     ],
 )
@@ -42,8 +41,15 @@ envoy_cc_library(
 
 envoy_cc_library(
     name = "awesome_filter_lib",
-    srcs = ["awesome_filter_config.cc"],
-    hdrs = ["awesome_filter_config.h"],
+    srcs = [
+        "config.cc",
+    ],
+    hdrs = [
+        "awesome.h",
+        "awesome_filter.h",
+        "awesome_filter_impl.h",
+        "config.h",
+    ],
     repository = "@envoy",
     deps = [
         ":pkg_cc_proto",

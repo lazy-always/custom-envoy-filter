@@ -13,12 +13,12 @@ namespace Filters
 namespace Ingress
 {
 
-class AwesomeFilterConfig
+class AwesomeIngressFilterConfig
     : public Extensions::HttpFilters::Common::FactoryBase<
           envoy::awesome::filters::ingress::AwesomeConfig>
 {
 public:
-    AwesomeFilterConfig() : FactoryBase("awesome.ingress") {}
+    AwesomeIngressFilterConfig() : FactoryBase("awesome.ingress") {}
 
 private:
     static constexpr uint64_t DefaultTimeout = 200;

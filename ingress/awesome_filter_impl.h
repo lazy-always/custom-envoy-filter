@@ -1,71 +1,86 @@
+#pragma once
+
+#include <cstdint>
+
+#include "awesome.h"
+#include "ingress/awesome_config.pb.h"
+#include "ingress/awesome_config.pb.validate.h"
+#include "envoy/tracing/http_tracer.h"
+#include "envoy/http/async_client.h"
+#include "envoy/upstream/cluster_manager.h"
+
+namespace Envoy
+{
+namespace Awesome
+{
+namespace Filters
+{
+namespace Ingress
+{
+
 /**
  * HTTP client configuration for the HTTP authorization (ext_authz) filter.
  */
 class AwesomeClientConfig
 {
 public:
-    AwesomeClientConfig(const envoy::extensions::filters::http::ext_authz::v3::ExtAuthz &config,
-                        uint32_t timeout, absl::string_view path_prefix);
+    AwesomeClientConfig(const envoy::awesome::filters::ingress::AwesomeConfig &config,
+                        std::uint32_t timeout)
 
-    /**
-   * Returns the name of the authorization cluster.
-   */
-    const std::string &cluster() { return cluster_name_; }
+        : cluster_(config.cluster()),
+          timeout_(timeout),
+          uri_(config.uri())
+    {
+    }
 
-    /**
-   * Returns the authorization request path prefix.
-   */
-    const std::string &pathPrefix() { return path_prefix_; }
-
-    /**
-   * Returns authorization request timeout.
-   */
+    const std::string &cluster() { return cluster_; }
+    const std::string &uri() { return uri_; }
     const std::chrono::milliseconds &timeout() const { return timeout_; }
-
-    /**
-   * Returns a list of matchers used for selecting the request headers that should be sent to the
-   * authorization server.
-   */
-    const MatcherSharedPtr &requestHeaderMatchers() const { return request_header_matchers_; }
-
-    /**
-   * Returns a list of matchers used for selecting the authorization response headers that
-   * should be send back to the client.
-   */
-    const MatcherSharedPtr &clientHeaderMatchers() const { return client_header_matchers_; }
-
-    /**
-   * Returns a list of matchers used for selecting the authorization response headers that
-   * should be send to an the upstream server.
-   */
-    const MatcherSharedPtr &upstreamHeaderMatchers() const { return upstream_header_matchers_; }
-
-    /**
-   * Returns a list of headers that will be add to the authorization request.
-   */
-    const Http::LowerCaseStrPairVector &headersToAdd() const { return authorization_headers_to_add_; }
-
-    /**
-   * Returns the name used for tracing.
-   */
     const std::string &tracingName() { return tracing_name_; }
 
 private:
-    static MatcherSharedPtr
-    toRequestMatchers(const envoy::type::matcher::v3::ListStringMatcher &matcher);
-    static MatcherSharedPtr
-    toClientMatchers(const envoy::type::matcher::v3::ListStringMatcher &matcher);
-    static MatcherSharedPtr
-    toUpstreamMatchers(const envoy::type::matcher::v3::ListStringMatcher &matcher);
-    static Http::LowerCaseStrPairVector
-    toHeadersAdd(const Protobuf::RepeatedPtrField<envoy::config::core::v3::HeaderValue> &);
-
-    const MatcherSharedPtr request_header_matchers_;
-    const MatcherSharedPtr client_header_matchers_;
-    const MatcherSharedPtr upstream_header_matchers_;
-    const Http::LowerCaseStrPairVector authorization_headers_to_add_;
-    const std::string cluster_name_;
+    const std::string cluster_;
     const std::chrono::milliseconds timeout_;
-    const std::string path_prefix_;
+    const std::string uri_;
     const std::string tracing_name_;
 };
+
+using ClientConfigSharedPtr = std::shared_ptr<AwesomeClientConfig>;
+
+/**
+ * This client implementation is used when the Ext_Authz filter needs to communicate with an
+ * HTTP authorization server. Unlike the gRPC client that allows the server to define the
+ * response object, in the HTTP client, all headers and body provided in the response are
+ * dispatched to the downstream, and some headers to the upstream. The HTTP client also allows
+ * setting a path prefix witch is not available for gRPC.
+ */
+class AwesomeHttpClientImpl : public Client,
+                              public Http::AsyncClient::Callbacks,
+                              Logger::Loggable<Logger::Id::config>
+{
+public:
+    explicit AwesomeHttpClientImpl(Upstream::ClusterManager &cm, ClientConfigSharedPtr config,
+                                   TimeSource &time_source);
+    ~AwesomeHttpClientImpl() override;
+
+    // ExtAuthz::Client
+    void cancel() override;
+
+    // Http::AsyncClient::Callbacks
+    void onSuccess(Http::ResponseMessagePtr &&message) override;
+    void onFailure(Http::AsyncClient::FailureReason reason) override;
+
+private:
+    ResponsePtr toResponse(Http::ResponseMessagePtr message);
+    Upstream::ClusterManager &cm_;
+    ClientConfigSharedPtr config_;
+    Http::AsyncClient::Request *request_{};
+    RequestCallbacks *callbacks_{};
+    TimeSource &time_source_;
+    Tracing::SpanPtr span_;
+};
+
+} // namespace Ingress
+} // namespace Filters
+} // namespace Awesome
+} // namespace Envoy

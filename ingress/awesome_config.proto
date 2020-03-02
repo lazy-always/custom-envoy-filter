@@ -8,8 +8,13 @@ syntax = "proto3";
 package envoy.awesome.filters.ingress;
 
 import "validate/validate.proto";
+import "google/protobuf/duration.proto";
 
 message AwesomeConfig {
-  string key = 1 [ (validate.rules).string.min_bytes = 1 ];
-  string val = 2 [ (validate.rules).string.min_bytes = 1 ];
+  string uri = 1 [ (validate.rules).string = {min_bytes : 1} ];
+  string cluster = 2 [ (validate.rules).string = {min_bytes : 1} ];
+  google.protobuf.Duration timeout = 3 [ (validate.rules).duration = {
+    required : true
+    gte {}
+  } ];
 }
