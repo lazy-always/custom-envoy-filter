@@ -8,26 +8,16 @@
             "name": "(lldb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "preLaunchTask": "Build",
-            "program": "${workspaceFolder}/bazel-out/darwin-dbg/bin/ingress/envoy",
+            "program": "${workspaceFolder}/bazel-bin/ingress/envoy",
             "args": [
                 "-c",
-                "${workspaceFolder}/configs/envoy-basic.yaml",
-                "-l",
-                "debug"
+                "${workspaceFolder}/configs/envoy-basic.yaml"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "lldb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ]
         }
     ]
 }

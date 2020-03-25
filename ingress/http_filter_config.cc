@@ -29,8 +29,8 @@ public:
     }
 
     /**
-   *  Return the Protobuf Message that represents your config incase you have config proto
-   */
+     *  Return the Protobuf Message that represents your config incase you have config proto
+     */
     ProtobufTypes::MessagePtr createEmptyConfigProto() override
     {
         return ProtobufTypes::MessagePtr{new com::awesome::Decoder()};

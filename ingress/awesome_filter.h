@@ -72,6 +72,7 @@ private:
     // The stats for the filter.
     ExtAuthzFilterStats stats_;
 };
+
 using FilterConfigSharedPtr = std::shared_ptr<AwesomeFilterConfig>;
 /**
  * HTTP ext_authz filter. Depending on the route configuration, this filter calls the global

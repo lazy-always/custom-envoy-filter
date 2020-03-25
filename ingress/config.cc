@@ -25,13 +25,11 @@ Envoy::Http::FilterFactoryCb AwesomeIngressFilterConfig::createFilterFactoryFrom
 
     const uint32_t timeout_ms = PROTOBUF_GET_MS_OR_DEFAULT(proto_config, timeout, DefaultTimeout);
     const auto client_config =
-        std::make_shared<AwesomeClientConfig>(
-            proto_config, timeout_ms);
+        std::make_shared<AwesomeClientConfig>(proto_config, timeout_ms);
 
-    Http::FilterFactoryCb callback = [filter_config, client_config,
-                                      &context](Http::FilterChainFactoryCallbacks &callbacks) {
-        auto client = std::make_unique<AwesomeHttpClientImpl>(
-            context.clusterManager(), client_config, context.timeSource());
+    Http::FilterFactoryCb callback = [filter_config, client_config, &context](Http::FilterChainFactoryCallbacks &callbacks) {
+        auto client = std::make_unique<AwesomeHttpClientImpl>(context.clusterManager(), client_config, context.timeSource());
+
         callbacks.addStreamDecoderFilter(Http::StreamDecoderFilterSharedPtr{
             std::make_shared<AwesomeFilter>(filter_config, std::move(client))});
     };
