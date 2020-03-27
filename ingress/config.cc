@@ -37,6 +37,11 @@ Envoy::Http::FilterFactoryCb AwesomeIngressFilterConfig::createFilterFactoryFrom
     return callback;
 }
 
+/**
+ * Static registration for the external authorization filter. @see RegisterFactory.
+ */
+REGISTER_FACTORY(AwesomeIngressFilterConfig, Server::Configuration::NamedHttpFilterConfigFactory);
+
 } // namespace Ingress
 } // namespace Filters
 } // namespace Awesome

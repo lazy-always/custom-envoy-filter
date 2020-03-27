@@ -11,7 +11,7 @@ envoy_cc_binary(
     name = "envoy",
     repository = "@envoy",
     deps = [
-        ":http_filter_config",
+        ":awesome_filter_config",
         "@envoy//source/exe:envoy_main_entry_lib",
     ],
 )
@@ -40,15 +40,26 @@ envoy_cc_library(
 )
 
 envoy_cc_library(
+    name = "awesome_filter_config",
+    srcs = ["config.cc"],
+    hdrs = ["config.h"],
+    repository = "@envoy",
+    deps = [
+        ":awesome_filter_lib",
+        "@envoy//include/envoy/server:filter_config_interface",
+    ],
+)
+
+envoy_cc_library(
     name = "awesome_filter_lib",
     srcs = [
-        "config.cc",
+        "awesome_filter.cc",
+        "awesome_filter_impl.cc",
     ],
     hdrs = [
         "awesome.h",
         "awesome_filter.h",
         "awesome_filter_impl.h",
-        "config.h",
     ],
     repository = "@envoy",
     deps = [

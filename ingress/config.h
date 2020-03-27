@@ -23,8 +23,8 @@ public:
 private:
     static constexpr uint64_t DefaultTimeout = 200;
     Http::FilterFactoryCb createFilterFactoryFromProtoTyped(
-        const envoy::awesome::filters::ingress::AwesomeConfig &proto_config,
-        const std::string &stats_prefix, Server::Configuration::FactoryContext &context) override;
+        const envoy::awesome::filters::ingress::AwesomeConfig &,
+        const std::string &, Server::Configuration::FactoryContext &) override;
 };
 
 } // namespace Ingress

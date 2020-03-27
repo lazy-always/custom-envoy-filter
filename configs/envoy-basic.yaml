@@ -23,10 +23,11 @@ static_resources:
                           route:
                             cluster: tenant1
                 http_filters:
-                  - name: sample # before envoy.router because order matters!
+                  - name: awesome.ingress # before envoy.router because order matters!
                     config:
-                      key: via
-                      val: sample-filter
+                      uri: htt://tolamu.com
+                      cluster: tenant1
+                      timeout: 10s
                   - name: envoy.router
                     typed_config: {}
   clusters:
