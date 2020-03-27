@@ -41,10 +41,9 @@ class AwesomeFilterConfig
 {
 public:
     AwesomeFilterConfig(const envoy::awesome::filters::ingress::AwesomeConfig &config,
-                        const LocalInfo::LocalInfo &local_info, 
+                        const LocalInfo::LocalInfo &local_info,
                         Stats::Scope &scope,
-                        Runtime::Loader &runtime, 
-                        Http::Context &http_context,
+                        Runtime::Loader &runtime, Http::Context &http_context,
                         const std::string &stats_prefix)
         : cluster_(config.cluster()),
           scope_(scope),
@@ -86,8 +85,9 @@ class AwesomeFilter : public Logger::Loggable<Logger::Id::filter>,
                       public RequestCallbacks
 {
 public:
-    AwesomeFilter(FilterConfigSharedPtr, ClientPtr &&);
-    ~AwesomeFilter();
+    AwesomeFilter(FilterConfigSharedPtr config, ClientPtr &&client)
+        : config_(config), client_(std::move(client)), stats_(config->stats()) {}
+    ~AwesomeFilter() {}
     void onDestroy() override;
 
     Http::FilterHeadersStatus decodeHeaders(Http::RequestHeaderMap &, bool) override;

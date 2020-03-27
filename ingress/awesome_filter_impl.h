@@ -26,13 +26,11 @@ class AwesomeClientConfig
 public:
     AwesomeClientConfig(const envoy::awesome::filters::ingress::AwesomeConfig &config,
                         std::uint32_t timeout)
-
         : cluster_(config.cluster()),
           timeout_(timeout),
           uri_(config.uri())
     {
     }
-
     const std::string &cluster() { return cluster_; }
     const std::string &uri() { return uri_; }
     const std::chrono::milliseconds &timeout() const { return timeout_; }
@@ -60,7 +58,9 @@ class AwesomeHttpClientImpl : public Client,
 {
 public:
     explicit AwesomeHttpClientImpl(Upstream::ClusterManager &cm, ClientConfigSharedPtr config,
-                                   TimeSource &time_source);
+                                   TimeSource &time_source)
+        : cm_(cm), config_(config), time_source_(time_source) {}
+
     ~AwesomeHttpClientImpl() override;
 
     // ExtAuthz::Client
