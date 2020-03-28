@@ -11,18 +11,7 @@ namespace Filters
 namespace Ingress
 {
 
-void AwesomeFilter::onDestroy() {}
-
-const Http::LowerCaseString AwesomeFilter::headerKey() const
-{
-    return Http::LowerCaseString("abc");
-}
-const std::string AwesomeFilter::headerValue() const
-{
-    return "value";
-}
-
-void AwesomeFilter::initiateCall(const Http::HeaderMap &)
+void AwesomeFilter::initiateCall(const Http::HeaderMap &headers)
 {
     if (filter_return_ == FilterReturn::StopDecoding)
     {
@@ -40,13 +29,12 @@ void AwesomeFilter::initiateCall(const Http::HeaderMap &)
     filter_return_ = FilterReturn::StopDecoding; // Don't let the filter chain continue as we are
                                                  // going to invoke check call.
     initiating_call_ = true;
-    client_->check(*this, callbacks_->activeSpan());
+    client_->check(*this, headers, callbacks_->activeSpan());
     initiating_call_ = false;
 }
 
 Http::FilterHeadersStatus AwesomeFilter::decodeHeaders(Http::RequestHeaderMap &headers, bool)
 {
-    headers.addCopy(headerKey(), headerValue());
     request_headers_ = &headers;
     ENVOY_STREAM_LOG(debug, "Awesome filter is starting the request", *callbacks_);
     initiateCall(headers);
@@ -69,9 +57,28 @@ void AwesomeFilter::setDecoderFilterCallbacks(Http::StreamDecoderFilterCallbacks
 {
     callbacks_ = &callbacks;
 }
-
+void AwesomeFilter::onDestroy()
+{
+    if (state_ == State::Calling)
+    {
+        state_ = State::Complete;
+        client_->cancel();
+    }
+}
 void AwesomeFilter::onComplete(ResponsePtr &&)
 {
+    state_ = State::Complete;
+    stats_.ok_.inc();
+    continueDecoding();
+}
+
+void AwesomeFilter::continueDecoding()
+{
+    filter_return_ = FilterReturn::ContinueDecoding;
+    if (!initiating_call_)
+    {
+        callbacks_->continueDecoding();
+    }
 }
 } // namespace Ingress
 } // namespace Filters

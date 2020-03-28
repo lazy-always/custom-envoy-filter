@@ -100,7 +100,8 @@
 			"valarray": "cpp",
 			"variant": "cpp",
 			"vector": "cpp",
-			"*.inc": "cpp"
+			"*.inc": "cpp",
+			"*.ipp": "cpp"
 		}
 	}
 }

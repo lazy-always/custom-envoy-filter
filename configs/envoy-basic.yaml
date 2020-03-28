@@ -26,7 +26,7 @@ static_resources:
                   - name: awesome.ingress # before envoy.router because order matters!
                     config:
                       uri: htt://tolamu.com
-                      cluster: tenant1
+                      cluster: xsuaa
                       timeout: 10s
                   - name: envoy.router
                     typed_config: {}
@@ -45,7 +45,24 @@ static_resources:
                     socket_address:
                       ##address: host.docker.internal
                       address: localhost
-                      port_value: 8081
+                      port_value: 8080
+                      #address: one.cfapps.sap.hana.ondemand.com
+                      #port_value: 443
+    - name: xsuaa
+      connect_timeout: 0.25s
+      type: strict_dns
+      lb_policy: round_robin
+      ##http2_protocol_options: {}
+      load_assignment:
+        cluster_name: xsuaa
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      ##address: host.docker.internal
+                      address: localhost
+                      port_value: 8082
                       #address: one.cfapps.sap.hana.ondemand.com
                       #port_value: 443
 admin:

@@ -10,6 +10,11 @@
 #include "envoy/upstream/cluster_manager.h"
 #include "envoy/tracing/http_tracer.h"
 
+#include "common/common/empty_string.h"
+#include "common/common/enum_to_int.h"
+
+#include "common/http/codes.h"
+#include "common/http/message_impl.h"
 #include "common/tracing/http_tracer_impl.h"
 
 namespace Envoy
@@ -69,7 +74,7 @@ public:
     // ExtAuthz::Client
     void cancel() override;
 
-    void check(RequestCallbacks &callbacks, Tracing::Span &) override;
+    void check(RequestCallbacks &callbacks, const Http::HeaderMap &headers, Tracing::Span &) override;
 
     // Http::AsyncClient::Callbacks
     void onSuccess(Http::ResponseMessagePtr &&message) override;

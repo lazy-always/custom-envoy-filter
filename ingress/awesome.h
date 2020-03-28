@@ -98,6 +98,7 @@ public:
     *
     */
     virtual void check(RequestCallbacks &callback,
+                       const Http::HeaderMap &headers,
                        Tracing::Span &parent_span) PURE;
 };
 

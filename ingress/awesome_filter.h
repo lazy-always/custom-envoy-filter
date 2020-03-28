@@ -101,9 +101,7 @@ public:
 private:
     void addResponseHeaders(Http::HeaderMap &, const Http::HeaderVector &);
     void initiateCall(const Http::HeaderMap &headers);
-    const Http::LowerCaseString headerKey() const;
-    const std::string headerValue() const;
-
+    void continueDecoding();
     // State of this filter's communication with the external authorization service.
     // The filter has either not started calling the external service, in the middle of calling
     // it or has completed.
