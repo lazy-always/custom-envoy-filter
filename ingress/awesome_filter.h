@@ -100,13 +100,9 @@ public:
 
 private:
     void addResponseHeaders(Http::HeaderMap &, const Http::HeaderVector &);
-
+    void initiateCall(const Http::HeaderMap &headers);
     const Http::LowerCaseString headerKey() const;
     const std::string headerValue() const;
-
-    //void initiateCall(const Http::HeaderMap &);
-    //void continueDecoding();
-    //bool isBufferFull();
 
     // State of this filter's communication with the external authorization service.
     // The filter has either not started calling the external service, in the middle of calling
@@ -133,7 +129,7 @@ private:
     Http::StreamDecoderFilterCallbacks *callbacks_{};
     Http::HeaderMap *request_headers_;
     State state_{State::NotStarted};
-    //FilterReturn filter_return_{FilterReturn::ContinueDecoding};
+    FilterReturn filter_return_{FilterReturn::ContinueDecoding};
     Upstream::ClusterInfoConstSharedPtr cluster_;
     // The stats for the filter.
     AwesomeFilterStats stats_;

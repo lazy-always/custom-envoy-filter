@@ -5,9 +5,12 @@
 #include "awesome.h"
 #include "ingress/awesome_config.pb.h"
 #include "ingress/awesome_config.pb.validate.h"
-#include "envoy/tracing/http_tracer.h"
+
 #include "envoy/http/async_client.h"
 #include "envoy/upstream/cluster_manager.h"
+#include "envoy/tracing/http_tracer.h"
+
+#include "common/tracing/http_tracer_impl.h"
 
 namespace Envoy
 {
@@ -65,6 +68,8 @@ public:
 
     // ExtAuthz::Client
     void cancel() override;
+
+    void check(RequestCallbacks &callbacks, Tracing::Span &) override;
 
     // Http::AsyncClient::Callbacks
     void onSuccess(Http::ResponseMessagePtr &&message) override;

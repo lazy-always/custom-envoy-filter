@@ -86,9 +86,19 @@ public:
     virtual ~Client() = default;
 
     /**
-   * Cancel an inflight Check request.
-   */
+    * Cancel an inflight Check request.
+    */
     virtual void cancel() PURE;
+    /**
+    * Request a check call to an external authorization service which can use the
+    * passed request parameters to make a permit/deny decision.
+    * @param callback supplies the completion callbacks.
+    *        NOTE: The callback may happen within the calling stack.
+    * @param parent_span source for generating an egress child span as part of the trace.
+    *
+    */
+    virtual void check(RequestCallbacks &callback,
+                       Tracing::Span &parent_span) PURE;
 };
 
 using ClientPtr = std::unique_ptr<Client>;
